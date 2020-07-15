@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using MapIntegration.ViewModels;
 
 namespace MapIntegration.Views
 {
@@ -15,6 +16,12 @@ namespace MapIntegration.Views
         public CovidTestingCenterPage()
         {
             InitializeComponent();
-        }   
+        }
+
+        private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (e.OldTextValue?.Length > 0 && string.IsNullOrEmpty(e.NewTextValue) && viewModel.PerformSearch.CanExecute(null))
+                viewModel.PerformSearch.Execute(null);
+        }
     }
 }

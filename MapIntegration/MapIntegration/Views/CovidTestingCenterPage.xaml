@@ -8,7 +8,7 @@
              xmlns:local="clr-namespace:MapIntegration.ViewModels"
              x:Class="MapIntegration.Views.CovidTestingCenterPage">
     <ContentPage.BindingContext>
-        <local:CovidTestingCentersViewModel/>
+        <local:CovidTestingCentersViewModel x:Name="viewModel"/>
     </ContentPage.BindingContext>
 
     <ContentPage.Content>
@@ -16,7 +16,7 @@
             <CollectionView.Header>
                 <StackLayout Spacing="5">
                     <Label Margin="20,0,0,0" FontSize="Large" Text="COVID Test Centers Nearby" FontAttributes="Bold" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" TextColor="Black"/>
-                    <SearchBar x:Name="SearchBar"  Placeholder="Search" CancelButtonColor="Black" PlaceholderColor="Black" HorizontalTextAlignment="Center"
+                    <SearchBar x:Name="SearchBar"  Placeholder="Search"  TextChanged="SearchBar_TextChanged"  CancelButtonColor="Black" PlaceholderColor="Black" HorizontalTextAlignment="Center"
                        FontSize="Medium" FontAttributes="Italic"
                        SearchCommand="{Binding PerformSearch}" SearchCommandParameter="{Binding Text, Source={x:Reference SearchBar}}"
                                />

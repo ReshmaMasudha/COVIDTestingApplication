@@ -10,6 +10,7 @@ using System.Windows.Input;
 using Xamarin.Essentials;
 using System.Linq;
 using Xamarin.Forms;
+using Plugin.Geolocator;
 
 namespace MapIntegration.ViewModels
 {
@@ -39,14 +40,16 @@ namespace MapIntegration.ViewModels
         public async void GetTestingCentersNearMe()
         {
             this.CovidDetails = await this.GetCovidDataAsync();
-            GetTestCenterDetailsbasedOnLocation();
-            
+            GetTestCenterDetailsbasedOnLocation();           
         }
 
         public async void GetTestCenterDetailsbasedOnLocation()
         {
+            if (!CrossGeolocator.Current.IsGeolocationEnabled || !CrossGeolocator.Current.IsGeolocationAvailable || !CrossGeolocator.IsSupported)
+            {
+                this.TestCenterDetails = null;
+            }
             var filteredCenters = new List<TestCenterDetail>();
-
             var currentlocation = await Geolocation.GetLastKnownLocationAsync();
             if (currentlocation == null)
             {
@@ -71,15 +74,16 @@ namespace MapIntegration.ViewModels
 
         public ICommand PerformSearch => new Command<string>((string query) =>
         {
-            if(string.IsNullOrEmpty(query) || (string.IsNullOrWhiteSpace(query)))
-            {
-                GetTestCenterDetailsbasedOnLocation();
-            }
-            else 
-            {
-                query = query.ToLower();
-                this.TestCenterDetails = this.CovidDetails.items.Where(x => x.address.Split(' ').Any(y=>y.ToLower().StartsWith(query))).ToList();
-            }
+           
+                if (string.IsNullOrEmpty(query) || (string.IsNullOrWhiteSpace(query)))
+                {
+                    GetTestCenterDetailsbasedOnLocation();
+                }
+                else
+                {
+                    query = query.ToLower();
+                    this.TestCenterDetails = this.CovidDetails.items.Where(x => x.address.Split(' ').Any(y => y.ToLower().StartsWith(query))).ToList();
+                }           
         });
 
         public void RaisePropertyChanged([CallerMemberName] string propertyName = "" )
@@ -89,6 +93,8 @@ namespace MapIntegration.ViewModels
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+
 
         #endregion
 
@@ -107,14 +113,10 @@ namespace MapIntegration.ViewModels
                 }
             }
         }
-
         
         public COVIDDetails CovidDetails { get; set; }
 
         #endregion
        
     }
-
-   
-
 }
