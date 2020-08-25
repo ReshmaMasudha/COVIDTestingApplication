@@ -55,6 +55,12 @@
     <AndroidSupportedAbis>armeabi-v7a;x86</AndroidSupportedAbis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="iLinkXamarinComponents">
+      <HintPath>..\..\..\..\..\Desktop\iLinkComponents\iLinkXamarinComponents.dll</HintPath>
+    </Reference>
+    <Reference Include="iLinkXamarinComponents.Droid">
+      <HintPath>..\..\..\..\..\Desktop\iLinkComponents\iLinkXamarinComponents.Droid.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -101,9 +107,7 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\icon.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\drawable\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\MapIntegration\MapIntegration.csproj">
       <Project>{BE7BB1FD-03C5-45F2-BD07-535F03BD4BD6}</Project>
@@ -112,6 +116,9 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\mipmap-hdpi\CovidTestingCenterIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\location.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

@@ -3,38 +3,83 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             
+             xmlns:geolocator="clr-namespace:Plugin.Geolocator;assembly=Plugin.Geolocator"
+             xmlns:iLinkComponent="clr-namespace:iLinkXamarinComponents.Controls;assembly=iLinkXamarinComponents"
              mc:Ignorable="d"
              xmlns:local="clr-namespace:MapIntegration.ViewModels"
              x:Class="MapIntegration.Views.CovidTestingCenterPage">
     <ContentPage.BindingContext>
         <local:CovidTestingCentersViewModel x:Name="viewModel"/>
     </ContentPage.BindingContext>
+    
+   
+    <Grid RowSpacing="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+           
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="25"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Label Grid.ColumnSpan="2" Margin="20,0,0,0" FontSize="Large" Text="COVID Test Centers Nearby" FontAttributes="Bold" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" TextColor="Black"/>
+        
+        <SearchBar Grid.Row="1" Grid.ColumnSpan="2" x:Name="SearchBar"  Placeholder="Search"  TextChanged="SearchBar_TextChanged"  CancelButtonColor="Black" PlaceholderColor="Black" HorizontalTextAlignment="Center"
+                       FontSize="Medium" FontAttributes="Italic"/>
 
-    <ContentPage.Content>
-        <CollectionView  x:Name="CovidCentersList" ItemsSource="{Binding TestCenterDetails}" Margin="10,0,10,0" >
-            <CollectionView.Header>
-                <StackLayout Spacing="5">
-                    <Label Margin="20,0,0,0" FontSize="Large" Text="COVID Test Centers Nearby" FontAttributes="Bold" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" TextColor="Black"/>
-                    <SearchBar x:Name="SearchBar"  Placeholder="Search"  TextChanged="SearchBar_TextChanged"  CancelButtonColor="Black" PlaceholderColor="Black" HorizontalTextAlignment="Center"
-                       FontSize="Medium" FontAttributes="Italic"
-                       SearchCommand="{Binding PerformSearch}" SearchCommandParameter="{Binding Text, Source={x:Reference SearchBar}}"
-                               />
-                </StackLayout>
-            </CollectionView.Header>
-            <CollectionView.ItemsLayout>
-                <GridItemsLayout Orientation="Vertical" Span="1" VerticalItemSpacing="5"/>
-            </CollectionView.ItemsLayout>
+        <ListView Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding TestCenterDetails}" x:Name="AutocompleteTextView"  IsVisible="false" ItemSelected="AutocompleteTextView_ItemSelected">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell Text="{Binding address}" TextColor="Black"  />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+       
+
+        <!--<iLinkComponent:AutoCompleteTextView  x:Name="SearchBar"  Grid.Row="1" Grid.ColumnSpan="2" BackgroundColor="Blue" />-->
+
+        <Image Grid.Row="3" WidthRequest="20" HeightRequest="20" Source="location.jpg"  IsVisible="{Binding IsVisible, Source={x:Reference locationLabel}}" />
+        <Label x:Name="locationLabel" Grid.Row="3" Grid.Column="1" VerticalOptions="CenterAndExpand" TextColor="Black" FontAttributes="Bold" Text="Current Location" IsVisible="false">
+            <Label.Triggers>
+                <MultiTrigger TargetType="Label">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding IsGeolocationEnabled, Source={x:Static geolocator:CrossGeolocator.Current}}" Value="True"/>
+                        <BindingCondition Binding ="{Binding Text, Source={x:Reference SearchBar, AutocompleteTextView} }"  Value="{x:Null}"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsVisible" Value="true"/>
+                </MultiTrigger>
+
+                <MultiTrigger TargetType="Label" >
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding IsGeolocationEnabled, Source={x:Static geolocator:CrossGeolocator.Current}}" Value="True"/>
+                        <BindingCondition Binding ="{Binding Text, Source={x:Reference SearchBar, AutocompleteTextView }}"  Value=""/>
+                        <!--<BindingCondition Binding="{Binding TestCenterDetails } " Value="{x:Null}"/>-->
+                    </MultiTrigger.Conditions>
+                    <Setter Property="IsVisible" Value="true"/>
+                </MultiTrigger>
+            </Label.Triggers>
+        </Label>
+        
+        <CollectionView Grid.Row="4" Grid.ColumnSpan="2"  x:Name="CovidCentersList" ItemsSource="{Binding TestCenterDetails}" Margin="10,0,10,0" IsVisible="false" >
+        <CollectionView.ItemsLayout>
+            <GridItemsLayout Orientation="Vertical" Span="1" VerticalItemSpacing="5"/>
+        </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame HasShadow="True" BorderColor="Black" CornerRadius="5" >
+                    <StackLayout>
+                        <Frame HasShadow="True" BorderColor="Black" CornerRadius="5" >
                         <StackLayout Orientation="Vertical">
                             <Label TextColor="Black" Text="{Binding title}" FontSize="Medium" FontAttributes="Bold" />
                             <Label  Text="{Binding address}"/>
                         </StackLayout>
                     </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </ContentPage.Content>
+                </StackLayout>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+    </Grid>
 </ContentPage>

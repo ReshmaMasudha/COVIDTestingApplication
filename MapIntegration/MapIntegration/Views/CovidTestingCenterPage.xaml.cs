@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using MapIntegration.ViewModels;
+using System.Globalization;
 
 namespace MapIntegration.Views
 {
@@ -20,8 +21,27 @@ namespace MapIntegration.Views
 
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (e.OldTextValue?.Length > 0 && string.IsNullOrEmpty(e.NewTextValue) && viewModel.PerformSearch.CanExecute(null))
-                viewModel.PerformSearch.Execute(null);
+            if (!string.IsNullOrEmpty(e.NewTextValue))
+            {
+               
+                viewModel.PerformSearch.Execute(e.NewTextValue);
+                CovidCentersList.IsVisible = false;
+                locationLabel.IsVisible = false;
+                AutocompleteTextView.IsVisible = true;
+                
+            }
+            
+        }
+
+        private void AutocompleteTextView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.SelectedItem.ToString()))
+            {
+
+                AutocompleteTextView.IsVisible = false;
+                CovidCentersList.IsVisible = true;
+            }
+            
         }
     }
 }

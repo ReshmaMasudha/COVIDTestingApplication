@@ -11,6 +11,9 @@ using Xamarin.Essentials;
 using System.Linq;
 using Xamarin.Forms;
 using Plugin.Geolocator;
+using System.IO;
+using Android.Widget;
+using Android;
 
 namespace MapIntegration.ViewModels
 {
@@ -40,14 +43,16 @@ namespace MapIntegration.ViewModels
         public async void GetTestingCentersNearMe()
         {
             this.CovidDetails = await this.GetCovidDataAsync();
-            GetTestCenterDetailsbasedOnLocation();           
+
+            GetTestCenterDetailsbasedOnLocation();
         }
 
         public async void GetTestCenterDetailsbasedOnLocation()
         {
-            if (!CrossGeolocator.Current.IsGeolocationEnabled || !CrossGeolocator.Current.IsGeolocationAvailable || !CrossGeolocator.IsSupported)
+            if (!CrossGeolocator.Current.IsGeolocationEnabled || !CrossGeolocator.Current.IsGeolocationAvailable || !CrossGeolocator.IsSupported)   //current-single ton approach
             {
                 this.TestCenterDetails = null;
+                return;
             }
             var filteredCenters = new List<TestCenterDetail>();
             var currentlocation = await Geolocation.GetLastKnownLocationAsync();
@@ -74,7 +79,8 @@ namespace MapIntegration.ViewModels
 
         public ICommand PerformSearch => new Command<string>((string query) =>
         {
-           
+            if (CovidDetails != null)
+            {
                 if (string.IsNullOrEmpty(query) || (string.IsNullOrWhiteSpace(query)))
                 {
                     GetTestCenterDetailsbasedOnLocation();
@@ -83,8 +89,10 @@ namespace MapIntegration.ViewModels
                 {
                     query = query.ToLower();
                     this.TestCenterDetails = this.CovidDetails.items.Where(x => x.address.Split(' ').Any(y => y.ToLower().StartsWith(query))).ToList();
-                }           
+                }
+            }
         });
+    
 
         public void RaisePropertyChanged([CallerMemberName] string propertyName = "" )
         {
